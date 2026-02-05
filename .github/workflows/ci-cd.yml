@@ -1,0 +1,24 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+      - name: Get VM External IP
+        id: get_ip
+        run: |
+          IP=$(gcloud compute instances describe ${{ secrets.GCP_VM_NAME }} --zone=${{ secrets.GCP_VM_ZONE }} --format='get(networkInterfaces[0].accessConfigs[0].natIP)') echo "vm_ip=$IP" >> $GITHUB_OUTPUT
+      
