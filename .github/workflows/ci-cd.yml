@@ -31,8 +31,53 @@ jobs:
           username: ${{ secrets.VM_USER}}
           key: ${{ secrets.VM_SSH_KEY}}
           script: |
-            echo "Running deployment on VM with IP: ${{ steps.get_ip.outputs.vm_ip }}"
-            echo whoami
+            set -e
+            APP_DIR="/home/${{ secrets.VM_USER}}/fastapi_demo_app"
+            SERVICE_NAME="fastapi"
+            SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
+            REPO_URL=https://github.com/Shaikhanis7/gcp-ci-cd.git
+            mkdir -p $APP_DIR
+            cd $APP_DIR
+
+            if [ ! -d ".git" ]; then
+              git init
+              git remote add origin "$REPO_URL"
+            else
+              git remote set-url origin "$REPO_URL"
+            fi
+
+            git fetch origin
+            git reset --hard origin/main
+
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+
+            source venv/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt
+            sudo tee "$SERVICE_FILE" > /dev/null <<EOF
+            [Unit]
+            Description=FastAPI Demo Service
+            After=network.target
+
+            [Service]
+            User=${{ secrets.VM_USER }}
+            WorkingDirectory=$APP_DIR
+            ExecStart=${APP_DIR}/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+            Restart=always
+            RestartSec=5
+            Environment=PATH=${APP_DIR}/venv/bin
+
+            [Install]
+            WantedBy=multi-user.target
+            EOF
+
+            sudo systemctl daemon-reload      # Reload systemd configs
+            sudo systemctl enable $SERVICE_NAME  # Enable auto-start on boot
+            sudo systemctl restart $SERVICE_NAME # Restart (or start) service
+            sudo systemctl status $SERVICE_NAME --no-pager  # Show status
+
 
 
             
