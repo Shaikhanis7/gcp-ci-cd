@@ -24,6 +24,14 @@ jobs:
             --zone=${{ secrets.VM_ZONE }} \
             --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
           echo "vm_ip=$IP" | tee -a "$GITHUB_OUTPUT"
-
+      - name: SSH into VM and Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ steps.get_ip.outputs.vm_ip }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            echo "Running deployment on VM with IP: ${{ steps.get_ip.outputs.vm_ip }}"
+            whoami
 
             
