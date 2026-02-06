@@ -22,8 +22,6 @@ jobs:
         run: |
           IP=$(gcloud compute instances describe ${{ secrets.VM_NAME }} \
             --zone=${{ secrets.VM_ZONE }}
-            # --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
           echo "VM IP is: $IP"
-          # echo "vm_ip=$IP" >> $GITHUB_OUTPUT
 
             
