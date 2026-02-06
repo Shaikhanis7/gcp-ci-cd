@@ -32,6 +32,7 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY}}
           script: |
             echo "Running deployment on VM with IP: ${{ steps.get_ip.outputs.vm_ip }}"
-            whoami
+            echo whoami
+
 
             
