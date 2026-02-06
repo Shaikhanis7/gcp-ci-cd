@@ -7,9 +7,9 @@ jobs:
   deploy: 
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checout code
         uses: actions/checkout@v4
-      - name: Authenticate to Google Cloud
+      - name: Authenticate to GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT }}
@@ -21,10 +21,9 @@ jobs:
         id: get_ip
         run: |
           IP=$(gcloud compute instances describe ${{ secrets.VM_NAME }} \
-            --zone=${{ secrets.VM_ZONE }} \
-            --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
-
+            --zone=${{ secrets.VM_ZONE }}
+            # --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
           echo "VM IP is: $IP"
-          echo "vm_ip=$IP" >> $GITHUB_OUTPUT
+          # echo "vm_ip=$IP" >> $GITHUB_OUTPUT
 
             
