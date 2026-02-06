@@ -21,7 +21,7 @@ jobs:
         id: get_ip
         run: |
           IP=$(gcloud compute instances describe ${{ secrets.VM_NAME }} \
-            --zone=${{ secrets.VM_ZONE }}
+            --zone=${{ secrets.VM_ZONE }})
           echo "VM IP is: $IP"
 
             
