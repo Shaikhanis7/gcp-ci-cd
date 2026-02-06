@@ -32,6 +32,15 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY}}
           script: |
             set -e
+
+            echo ">>> Installing dependencies..."
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq git python3 python3-venv python3-pip
+            
+            # Verify installations
+            git --version
+            python3 --version
+
             APP_DIR="/home/${{ secrets.VM_USER}}/fastapi_demo_app"
             SERVICE_NAME="fastapi"
             SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
