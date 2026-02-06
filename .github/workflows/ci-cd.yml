@@ -4,10 +4,10 @@ on:
     branches:
       - main
 jobs:
-  deploy: 
+  inital-setup: 
     runs-on: ubuntu-latest
     steps:
-      - name: Checout code
+      - name: Checkout code
         uses: actions/checkout@v4
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v1
@@ -21,7 +21,9 @@ jobs:
         id: get_ip
         run: |
           IP=$(gcloud compute instances describe ${{ secrets.VM_NAME }} \
-            --zone=${{ secrets.VM_ZONE }})
+            --zone=${{ secrets.VM_ZONE }}
+            --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
           echo "VM IP is: $IP"
+
 
             
